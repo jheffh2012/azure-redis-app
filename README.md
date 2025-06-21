@@ -76,6 +76,22 @@ In GitHub (Settings → Secrets → Actions), add:
 
 ---
 
+## 🌐 How to Access the Application
+
+1. Access the API documentation at:  
+   **http://url/swagger/index.html**
+
+2. In your `appsettings.json`, add the property `RedisSecretPath` pointing to a file that contains the Redis connection string.  
+   Example:
+   ```json
+   {
+     // ...existing settings...
+     "RedisSecretPath": "/path/to/redis-connection-string.txt"
+   }
+   ```
+
+---
+
 ## 🏁 Publishing a New Version
 
 To publish a new version and start the deploy:
