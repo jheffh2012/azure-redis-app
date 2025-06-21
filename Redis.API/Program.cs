@@ -53,7 +53,7 @@ app.MapGet("/keys", (RedisConnectionProvider provider) =>
 .WithOpenApi();
 
 
-app.MapHealthChecks("api/healthchech");
+app.MapHealthChecks("api/healthcheck");
 
 app.Lifetime.ApplicationStopping.Register(() =>
 {
