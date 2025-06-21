@@ -47,7 +47,7 @@ jobs:
         cat <<EOF > helm/overrides.yaml
         image:
           name: $IMAGE_NAME
-          tag: ${{ github.sha }}
+          tag: $VERSION
         secret:
           name: "${{ secrets.HELM_VALUES_SECRET_SECRET_KEY }}"
           mountPath: "${{ secrets.HELM_VALUES_SECRET_MOUNTPATH }}"
