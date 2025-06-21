@@ -44,7 +44,7 @@ jobs:
 
     - name: Criar arquivo values.yaml dinâmico
       run: |
-        cat <<EOF > helm/overrides.yaml
+        cat <<EOF > chart/overrides.yaml
         image:
           name: $IMAGE_NAME
           tag: $VERSION
@@ -61,4 +61,4 @@ jobs:
 
     - name: Deploy via Helm
       run: |
-        helm upgrade --install redis-app $CHART_PATH -f helm/overrides.yaml --namespace prod --create-namespace
+        helm upgrade --install redis-app $CHART_PATH -f chart/overrides.yaml --namespace prod --create-namespace
