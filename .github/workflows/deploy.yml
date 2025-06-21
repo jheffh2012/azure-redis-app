@@ -29,7 +29,7 @@ jobs:
         docker push $IMAGE_NAME:VERSION
 
     - name: Instalar Azure CLI
-      uses: azure/setup-azure@v3
+      uses: azure/setup-cli@v1
     
     - name: Instalar Helm
       uses: azure/setup-helm@v3
