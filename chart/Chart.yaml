@@ -1,0 +1,5 @@
+apiVersion: v2
+name: meu-app
+description: Um chart Helm simples com secret em volume
+version: 0.1.0
+appVersion: "1.0.0"

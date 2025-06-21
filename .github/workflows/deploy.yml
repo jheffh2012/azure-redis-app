@@ -1,0 +1,62 @@
+name: Build and Deploy to AKS with Helm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  VERSION: ${{ github.ref_name }}
+  IMAGE_NAME: ${{ secrets.REGISTRY_USERNAME }}/redis-app
+  CHART_PATH: ./chart
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+
+    - name: Login no GitHub Container Registry
+      run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login -u ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+
+    - name: Build da imagem Docker
+      run: |
+        docker build -t $IMAGE_NAME:VERSION .
+        docker push $IMAGE_NAME:VERSION
+
+    - name: Instalar Azure CLI
+      uses: azure/setup-azure@v3
+    
+    - name: Instalar Helm
+      uses: azure/setup-helm@v3
+
+    - name: Login no Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Obter credenciais do AKS
+      run: az aks get-credentials --resource-group ${{ secrets.AZURE_RG }} --name ${{ secrets.AZURE_AKS }} --overwrite-existing
+
+    - name: Criar arquivo values.yaml dinâmico
+      run: |
+        cat <<EOF > helm/overrides.yaml
+        image:
+          name: $IMAGE_NAME
+          tag: ${{ github.sha }}
+        secret:
+          name: "${{ secrets.HELM_VALUES_SECRET_SECRET_KEY }}"
+          mountPath: "${{ secrets.HELM_VALUES_SECRET_MOUNTPATH }}"
+        service:
+          type: "${{ secrets.HELM_VALUES_SERVICE_TYPE }}"
+          port: ${{ secrets.HELM_VALUES_SERVICE_PORT }}
+        user_assigned_identity_id: "${{ secrets.HELM_VALUES_USER_ASSIGNED_IDENTITY_ID }}"
+        keyvault_name: "${{ secrets.HELM_VALUES_KEY_VAULT_NAME }}"
+        tenant_id: "${{ secrets.HELM_VALUES_TENANT_ID }}"
+        EOF
+
+    - name: Deploy via Helm
+      run: |
+        helm upgrade --install redis-app $CHART_PATH -f helm/overrides.yaml --namespace prod --create-namespace

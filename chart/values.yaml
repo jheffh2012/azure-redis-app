@@ -1,0 +1,15 @@
+image:
+  name: minha-imagem
+  tag: latest
+
+secret:
+  name: meu-secret
+  mountPath: /etc/segredos
+
+service:
+  type: ClusterIP
+  port: 80
+
+user_assigned_identity_id: ""
+keyvault_name: ""
+tenant_id: ""

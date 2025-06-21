@@ -1,0 +1,19 @@
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ .Release.Name }}-storage-class
+  namespace: default
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: {{.Values.user_assigned_identity_id}}
+    keyvaultName: "{{.Values.keyvault_name}}"
+    objects: |
+      array:
+        - |
+          objectName: {{.Values.secret.name}}
+          objectType: secret
+          objectVersion: "" 
+    tenantId: {{.Values.tenant_id}}
