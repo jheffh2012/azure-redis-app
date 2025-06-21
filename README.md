@@ -1,14 +1,27 @@
-# .NET 8 API - Deploy Automático com GitHub Actions e AKS
+# .NET 8 API - Automatic Deploy with GitHub Actions and AKS
 
-Este repositório contém uma aplicação ASP.NET Core 8 (API) com pipeline CI/CD usando GitHub Actions para:
+This repository contains an ASP.NET Core 8 (API) application with a CI/CD pipeline using GitHub Actions for:
 
-- Build da imagem Docker
-- Push para o GitHub Container Registry (GHCR)
-- Deploy automático em um cluster **AKS (Azure Kubernetes Service)** usando **Helm**
+- Building the Docker image
+- Pushing to GitHub Container Registry (GHCR)
+- Automatic deployment to an **AKS (Azure Kubernetes Service)** cluster using **Helm**
+
+For the pipeline to work:
+
+- The required permissions must be applied to the used ClientId;
+- Add a secret in the keyvault with the Redis connection string;
+- Grant permission in the keyvault for the Kubernetes addon with CSI;
+
+```
+az aks show --resource-group resource-group-name --name resource-name --query addonProfiles.azureKeyvaultSecretsProvider.identity.objectId -o tsv
+to add in keyvault permission
+az aks show --resource-group resource-group-name --name resource-name --query addonProfiles.azureKeyvaultSecretsProvider.identity.clientId -o tsv
+to add in helm
+```
 
 ---
 
-## 🚀 Tecnologias
+## 🚀 Technologies
 
 - [.NET 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8)
 - [Docker](https://www.docker.com/)
@@ -18,58 +31,61 @@ Este repositório contém uma aplicação ASP.NET Core 8 (API) com pipeline CI/C
 
 ---
 
-## 🛠️ Estrutura do Projeto
+## 🛠️ Project Structure
 
 ```
 .
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml         # Pipeline GitHub Actions
-├── helm/
-│   └── chart/                 # Helm chart para deploy no AKS
-│       ├── Chart.yaml
-│       ├── values.yaml
-│       └── templates/
-├── src/
-│   └── MinhaApi/              # Código-fonte .NET 8
+│       └── deploy.yml         # GitHub Actions pipeline
+├── chart/                     # Helm chart for AKS deployment
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   └── templates/
+├── Redis.API/                 # .NET 8 source code
 ├── Dockerfile
 └── README.md
 ```
 
 ---
 
-## 🔐 Secrets Necessários
+## 🔐 Required Secrets
 
-No GitHub (Settings → Secrets → Actions), adicione:
+In GitHub (Settings → Secrets → Actions), add:
 
-| Nome                       | Descrição |
-|---------------------------|-----------|
-| `REGISTRY_USERNAME`       | Usuário do GitHub (ex: `jheffh2012`) |
-| `REGISTRY_TOKEN`          | Token de acesso com permissão `write:packages` |
-| `AZURE_CREDENTIALS`       | JSON de credenciais do Azure (`az ad sp create-for-rbac --sdk-auth`) |
-| `HELM_VALUES_SECRET_SECRET_KEY` | Exemplo de valor secreto injetado no Helm |
-| `HELM_VALUES_SECRET_MOUNTPATH`| Outro valor secreto |
-| `HELM_VALUES_SERVICE_TYPE`| Outro valor secreto |
-| `HELM_VALUES_SERVICE_PORT`| Outro valor secreto |
-| `HELM_VALUES_USER_ASSIGNED_IDENTITY_ID`| Outro valor secreto |
-| `HELM_VALUES_KEY_VAULT_NAME`| Outro valor secreto |
-| `HELM_VALUES_TENANT_ID`| Outro valor secreto |
-
----
-
-## ⚙️ Como Funciona o Deploy
-
-1. O pipeline é disparado **quando uma tag semântica é criada** (ex: `v1.0.0`)
-2. A imagem é **buildada e publicada no GHCR**
-3. O Helm substitui os valores e aplica o **deploy no AKS**
+| Name                              | Description |
+|------------------------------------|-------------|
+| `REGISTRY_USERNAME`                | GitHub username (e.g., `jheffh2012`) |
+| `REGISTRY_TOKEN`                   | Access token with `write:packages` permission |
+| `AZURE_CREDENTIALS`                | Azure credentials JSON (`az ad sp create-for-rbac --sdk-auth`) |
+| `HELM_VALUES_SECRET_SECRET_KEY`    | Example of a secret value injected into Helm |
+| `HELM_VALUES_SECRET_MOUNTPATH`     | Another secret value |
+| `HELM_VALUES_SERVICE_TYPE`         | Another secret value |
+| `HELM_VALUES_SERVICE_PORT`         | Another secret value |
+| `HELM_VALUES_USER_ASSIGNED_IDENTITY_ID` | Another secret value |
+| `HELM_VALUES_KEY_VAULT_NAME`       | Another secret value |
+| `HELM_VALUES_TENANT_ID`            | Another secret value |
 
 ---
 
-## 🏁 Publicando uma nova versão
+## ⚙️ How the Deploy Works
 
-Para publicar uma nova versão e iniciar o deploy:
+1. The pipeline is triggered **when a semantic tag is created** (e.g., `v1.0.0`)
+2. The image is **built and published to Docker Hub**
+3. Helm replaces the values and applies the **deploy to AKS**
+
+---
+
+## 🏁 Publishing a New Version
+
+To publish a new version and start the deploy:
 
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
+
+## 🏁 Next Steps
+
+1. Add tests to the application and pipeline;
+2. Remove Helm from the repository and use GitOps
