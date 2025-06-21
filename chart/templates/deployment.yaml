@@ -15,6 +15,7 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
           volumeMounts:
             - name: secret-volume
               mountPath: {{ .Values.secret.mountPath }}
