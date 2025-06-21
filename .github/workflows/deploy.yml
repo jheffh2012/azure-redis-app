@@ -36,8 +36,8 @@ jobs:
     - uses: azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        cluster-name: ${{ env.AZURE_AKS }}
-        resource-group: ${{ env.AZURE_RG }}
+        cluster-name: ${{ secrets.AZURE_AKS }}
+        resource-group: ${{ secrets.AZURE_RG }}
       
     - name: Instalar Helm
       uses: azure/setup-helm@v3
