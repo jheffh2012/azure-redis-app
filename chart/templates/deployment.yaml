@@ -26,6 +26,9 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "500m"
+          env:
+            - name: RedisSecretPath
+              value: "{{ .Values.secret.mountPath }}/{{ .Values.secret.name }}"
           livenessProbe:
             httpGet:
               path: /api/healthcheck
