@@ -92,6 +92,30 @@ In GitHub (Settings → Secrets → Actions), add:
 
 ---
 
+## 📋 How to Get Logs in Kubernetes
+
+To view the logs of your application's pod in AKS, use the following command:
+
+```bash
+kubectl logs <pod-name> -n namespace-deployed
+```
+
+If you want to see logs for all pods in a deployment, you can use:
+
+```bash
+kubectl logs deployment/<deployment-name> --tail=100
+```
+
+To list all pods in the current namespace:
+
+```bash
+kubectl get pods
+```
+
+Replace `<pod-name>` or `<deployment-name>` with the actual names from your cluster.
+
+---
+
 ## 🏁 Publishing a New Version
 
 To publish a new version and start the deploy:
