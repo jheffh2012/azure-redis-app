@@ -3,7 +3,7 @@
 This repository contains an ASP.NET Core 8 (API) application with a CI/CD pipeline using GitHub Actions for:
 
 - Building the Docker image
-- Pushing to GitHub Container Registry (GHCR)
+- Pushing to Docker Container Registry
 - Automatic deployment to an **AKS (Azure Kubernetes Service)** cluster using **Helm**
 
 For the pipeline to work:
@@ -11,6 +11,7 @@ For the pipeline to work:
 - The required permissions must be applied to the used ClientId;
 - Add a secret in the keyvault with the Redis connection string;
 - Grant permission in the keyvault for the Kubernetes addon with CSI;
+- Grant Ip Kubernetes to get access for azure redis cache;
 
 ```
 az aks show --resource-group resource-group-name --name resource-name --query addonProfiles.azureKeyvaultSecretsProvider.identity.objectId -o tsv
